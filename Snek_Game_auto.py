@@ -4,8 +4,8 @@ import random
 import time
 
 #PYGAME VARIABLES
-width=500
-height=500
+width=800
+height=800
 
 #COLORS
 white=(255,255,255)
@@ -23,8 +23,8 @@ pygame.display.update()
 def rand_food_spawn():
     global food_x
     global food_y
-    food_x=random.randrange(10,width-10,10)
-    food_y=random.randrange(10,height-10,10)
+    food_x=random.randrange(snake_head_size,width-snake_head_size,snake_head_size)
+    food_y=random.randrange(snake_head_size,height-snake_head_size,snake_head_size)
     
 def draw_snake(snake_Head,snake_body):
     for body in snake_body:
@@ -61,16 +61,18 @@ def Exit_Menu():
         pygame.display.update()
     
 def play_game():
+    global snake_head_size
+    snake_head_size=20
     # Food Variables
     global food_x
     global food_y
     
-    food_x=random.randrange(10,width-10,10)
-    food_y=random.randrange(10,height-10,10)
+    food_x=random.randrange(snake_head_size,width-snake_head_size,snake_head_size)
+    food_y=random.randrange(snake_head_size,height-snake_head_size,snake_head_size)
     
     #SNAKE VARIABLES
     direction='STOP'
-    snake_head_size=9
+    #snake_head_size=10
 
     x_move=0
     y_move=0
@@ -93,6 +95,8 @@ def play_game():
             # Check for exit
             if event.type == pygame.QUIT:
                 Exit_Menu()
+                
+            '''
             # Check for keypresses and move
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a and direction!='RIGHT':
@@ -110,12 +114,11 @@ def play_game():
                 if event.key == pygame.K_s and direction!='UP':
                     direction='DOWN'
                     y_move=speed
-                    x_move=0
+                    x_move=0'''
                     
-        # Check if out of boundary
-        if x_pos<=0 or x_pos>=500 or y_pos<=0 or y_pos>=500:
-            Exit_Menu()
-            print('>>> OUT OF BOUNDARY')
+            
+                    
+        
         
         # Check if head collided with food
         if x_pos == food_x and y_pos ==  food_y:
@@ -132,21 +135,45 @@ def play_game():
         snake_head.append(y_pos)
         snake_body.append(snake_head)
         
+ 
+            
+        # Auto move
+        if x_pos < food_x and direction != 'LEFT':
+            x_move=speed
+            y_move=0
+        if x_pos > food_x and direction != 'RIGHT':
+            x_move=-speed
+            y_move=0
+                
+        if x_pos == food_x:
+            x_move=0
+            if y_pos < food_y and direction != 'UP':
+                y_move=speed
+                            
+            if y_pos > food_y and direction != 'DOWN':
+                y_move=-speed
+        
+        # Check if out of boundary
+        if x_pos<=0 or x_pos>=width or y_pos<=0 or y_pos>=height:
+            Exit_Menu()
+            print('>>> OUT OF BOUNDARY')
+        
         if len(snake_body) > length_snake:
             del snake_body[0]
             
-        # Check collisions with the body
+        #Check collisions with the body
         for body in snake_body[:-1]:
             if body == snake_head :
                 print('>>> ATE YOURSELF')
-                Exit_Menu()
+                play_game()
                 
-        draw_snake(snake_head_size,snake_body)
-        pygame.draw.rect(window,red,[food_x,food_y,10,10])#draws food
+                
+        draw_snake(snake_head_size-5,snake_body)
+        pygame.draw.rect(window,red,[food_x,food_y,snake_head_size-5,snake_head_size-5])#draws food
         show_score()# displays the score
         pygame.display.update()
         
-        clock.tick(15)
+        clock.tick(50)
 
 play_game()
     
