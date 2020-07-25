@@ -2,6 +2,9 @@
 import pygame
 import random
 import time
+import os
+
+os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 #PYGAME VARIABLES
 width=500
@@ -14,6 +17,10 @@ greeen=(0,255,0)
 red=(255,0,0)
 
 pygame.init()
+info = pygame.display.Info()
+width=info.current_w
+height=info.current_h
+
 window = pygame.display.set_mode((width,height))
 clock = pygame.time.Clock()
 font_style = pygame.font.SysFont('monospace',30)
@@ -23,8 +30,8 @@ pygame.display.update()
 def rand_food_spawn():
     global food_x
     global food_y
-    food_x=random.randrange(10,width-10,10)
-    food_y=random.randrange(10,height-10,10)
+    food_x=random.randrange(20,width-20,20)
+    food_y=random.randrange(20,height-20,20)
     
 def draw_snake(snake_Head,snake_body):
     for body in snake_body:
@@ -42,12 +49,12 @@ def Exit_Menu():
     _exit=True
     while _exit:
         window.fill(black)
-        GO = font_style.render('  GAME OVER   ',True,greeen)
-        T1 = font_style.render('PLAY AGAIN : P',True,greeen)
-        T2 = font_style.render('   EXIT    : X',True,greeen)
-        window.blit(GO,[110,180])
-        window.blit(T1,[110,220])
-        window.blit(T2,[110,260])
+        GO = font_style.render('  GAME  OVER',True,greeen)
+        T1 = font_style.render(' P - PLAY AGAIN',True,greeen)
+        T2 = font_style.render(' X -   EXIT',True,greeen)
+        window.blit(GO,[0,0])
+        window.blit(T1,[0,30])
+        window.blit(T2,[0,60])
         # Pygame events
         for event in pygame.event.get():
             # Check for exit
@@ -65,12 +72,12 @@ def play_game():
     global food_x
     global food_y
     
-    food_x=random.randrange(10,width-10,10)
-    food_y=random.randrange(10,height-10,10)
+    food_x=random.randrange(20,width-20,20)
+    food_y=random.randrange(20,height-20,20)
     
     #SNAKE VARIABLES
     direction='STOP'
-    snake_head_size=9
+    snake_head_size=18
 
     x_move=0
     y_move=0
@@ -78,7 +85,7 @@ def play_game():
     x_pos=width/2
     y_pos=height/2
 
-    speed=10
+    speed=20
 
     snake_body=[]
     global length_snake
@@ -93,6 +100,8 @@ def play_game():
             # Check for exit
             if event.type == pygame.QUIT:
                 Exit_Menu()
+
+            
             # Check for keypresses and move
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a and direction!='RIGHT':
@@ -113,7 +122,7 @@ def play_game():
                     x_move=0
                     
         # Check if out of boundary
-        if x_pos<=0 or x_pos>=500 or y_pos<=0 or y_pos>=500:
+        if x_pos<=0 or x_pos>=width or y_pos<=0 or y_pos>=height:
             Exit_Menu()
             print('>>> OUT OF BOUNDARY')
         
@@ -142,11 +151,11 @@ def play_game():
                 Exit_Menu()
                 
         draw_snake(snake_head_size,snake_body)
-        pygame.draw.rect(window,red,[food_x,food_y,10,10])#draws food
+        pygame.draw.rect(window,red,[food_x,food_y,20,20])#draws food
         show_score()# displays the score
         pygame.display.update()
         
-        clock.tick(15)
+        clock.tick(14)
 
 play_game()
     
