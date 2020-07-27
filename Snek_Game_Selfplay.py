@@ -21,7 +21,7 @@ info = pygame.display.Info()
 width=info.current_w
 height=info.current_h
 
-window = pygame.display.set_mode((width,height))
+window = pygame.display.set_mode((width,height),pygame.FULLSCREEN)
 clock = pygame.time.Clock()
 font_style = pygame.font.SysFont('monospace',30)
 score_font = pygame.font.SysFont('monospace',25)
@@ -37,11 +37,18 @@ def draw_snake(snake_Head,snake_body):
     for body in snake_body:
         pygame.draw.rect(window,white,[body[0],body[1],snake_Head,snake_Head])
         
+high_score = 0
 def show_score():
-    sco = score_font.render(f'LENGTH : {length_snake}',True,greeen)
+    global high_score
+    if length_snake>high_score: high_score=length_snake
+    sco = score_font.render(f'LENGTH : {length_snake}    HIGH SCORE : {high_score}',True,greeen)
     window.blit(sco,[0,0])
     
+
+
+    
 def play_game():
+    a='X'
     # Food Variables
     global food_x
     global food_y
@@ -103,19 +110,26 @@ def play_game():
         snake_body.append(snake_head)
 
         # Auto move
-        if x_pos < food_x and direction != 'LEFT':
-            x_move=speed
-            y_move=0
-        if x_pos > food_x and direction != 'RIGHT':
-            x_move=-speed
-            y_move=0
+        
+        if a=='X':
+            a='Y'
+            if x_pos < food_x and direction != 'LEFT':
+                x_move=speed
+                y_move=0
+            if x_pos > food_x and direction != 'RIGHT':
+                x_move=-speed
+                y_move=0
+            
+        if a=='Y':
+            a='X'
+            #if x_pos == food_x:
                 
-        if x_pos == food_x:
-            x_move=0
             if y_pos < food_y and direction != 'UP':
+                x_move=0
                 y_move=speed
-                            
+                                
             if y_pos > food_y and direction != 'DOWN':
+                x_move=0
                 y_move=-speed
         
         if len(snake_body) > length_snake:
@@ -127,12 +141,14 @@ def play_game():
                 print('>>> ATE YOURSELF')
                 play_game()
                 
+        
+                
         draw_snake(snake_head_size,snake_body)
         pygame.draw.rect(window,red,[food_x,food_y,20,17])#draws food
         show_score()# displays the score
         pygame.display.update()
         
-        clock.tick(35)
+        clock.tick(30)
 
 play_game()
     
